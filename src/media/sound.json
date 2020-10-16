@@ -1,0 +1,28 @@
+{
+    "profile": {
+        "name": "声音"
+    },
+    "data": {
+        "volume": 95,
+        "metas": {
+            "杜鹃": {
+                "interval": 51
+            },
+            "公鸡": {
+                "interval": 35
+            },
+            "母鸡": {
+                "interval": 60
+            },
+            "喜鹊": {
+                "interval": 50
+            },
+            "鸭子": {
+                "interval": 8
+            },
+            "马": {
+                "interval": 15
+            }
+        }
+    }
+}
