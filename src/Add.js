@@ -4,7 +4,8 @@ import Fab from '@material-ui/core/Fab';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import React, { useContext } from 'react';
-import { YingContext, getFab } from './lib/react-ying/index';
+import { YingContext, getFab } from './lib/react-ying';
+
 console.log(111)
 const useStyles = makeStyles((theme) => ({
      root: {
@@ -19,12 +20,13 @@ const useStyles = makeStyles((theme) => ({
           ...getFab(theme)
      },
 }));
-let json, index
+let index
+const json = []
 export default function Add() {
      const classes = useStyles();
      const { sendData, sendIntent } = useContext(YingContext);
      const add = (event) => {
-          const files = [...event.target.files]
+          let files = [...event.target.files]
           index = files.length
           files.forEach(file => {
                const reader = new FileReader()
@@ -65,8 +67,13 @@ export default function Add() {
                     } else if (type === 'text') {
                          onAdd({ [id]: { text: result } })
                     } else if (type === 'application') {
-                         json = JSON.parse(result.replace(/\n/g, "").replace(/\r/g, ""))
-                         onAdd()
+                         const j = JSON.parse(result.replace(/\n/g, "").replace(/\r/g, ""))
+                         if (['sound', 'app'].includes(id)) {
+                              json.push(j)
+                              onAdd()
+                         } else {
+                              onAdd({ [id]: j })
+                         }
                     }
                }
                if (file) {
@@ -81,9 +88,9 @@ export default function Add() {
      const onAdd = (meta) => {
           if (meta) sendData({ metas: meta })
           index--
-          if (index === 0 && json) {
+          if (index === 0 && json.length > 0) {
                setTimeout(() => {
-                    sendIntent(json)
+                    json.forEach(j => sendIntent(j))
                }, 5000)
           }
      }

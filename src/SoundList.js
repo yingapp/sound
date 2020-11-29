@@ -1,6 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState,useMemo } from 'react';
 import Add from './Add';
 import useDeepEffect from "./lib/deeply-checked-effect";
 import { YingContext } from './lib/react-ying/index';
@@ -9,6 +9,7 @@ import Refresh from './Refresh';
 import Profile from './Profile';
 import TokenBig from './TokenBig';
 import { getStatusBarHeight } from './lib/util/util'
+import useWindowSize from './useWindowSize'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,8 +44,9 @@ const rStyle = {
 console.log(111)
 export default function Staff() {
   const { user, cache, showDialog } = useContext(YingContext)
-  const classes = useStyles();
-  const [data, setData] = useState();
+  const classes = useStyles()
+  const [data, setData] = useState()
+  const windowSize=useWindowSize()
   useDeepEffect(() => {
     console.log(user)
     if (user && user.intents && user.intents.shengyin && user.intents.shengyin.data) {
@@ -133,9 +135,17 @@ export default function Staff() {
       return Math.floor(progress * 100) + '%'
     }
   }
+  const heightFull = useMemo(() => {
+    const size = Object.values(data?.metas || {}).length
+    const { height: h, width: w } = windowSize
+    const n = Math.floor(w / 150)
+    const m = Math.floor(size / n)
+    const hh = m * 150
+    return hh > h
+  }, [data,windowSize]);
   return (
     <div style={{ margin: 'auto' }}>
-      {data && <Grid container className={classes.root} >
+      {data && <Grid container className={classes.root} style={{alignContent:heightFull?'stretch':'center'}}>
         {Object.entries(data.metas || {}).map(([id, meta]) => (
           <Grid key={id} item>
             <Play meta={meta} volume={data.volume} />
